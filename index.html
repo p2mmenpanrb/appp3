@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Rekap Kerja Asdep PPP</title>
+<style>
+:root{
+  --bg:#f7f7f8;--surface:#fff;--line:#e4e4e7;--text:#18181b;--muted:#71717a;
+  --soft:#fafafa;--dark:#18181b;--green:#166534;--green-bg:#f0fdf4;
+  --blue:#1d4ed8;--blue-bg:#eff6ff;--amber:#92400e;--amber-bg:#fffbeb;
+  --red:#b91c1c;--red-bg:#fef2f2;--purple:#6d28d9;--purple-bg:#f5f3ff
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button,a{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.app{min-height:100vh;display:grid;grid-template-columns:220px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);padding:14px 10px;overflow:auto}
+.brand{padding:10px 10px 18px;font-weight:800;font-size:15px}
+.brand small{display:block;color:var(--muted);font-size:10px;font-weight:500;margin-top:3px}
+.nav{display:grid;gap:3px}
+.nav button{border:0;background:transparent;border-radius:7px;padding:9px 10px;text-align:left;font-size:13px;color:#3f3f46}
+.nav button:hover{background:#f4f4f5}
+.nav button.active{background:#18181b;color:#fff}
+.main{min-width:0;padding:20px 22px 40px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:15px;border-bottom:1px solid var(--line);margin-bottom:16px}
+h1{font-size:24px;margin:0;line-height:1.2}
+.subtitle{color:var(--muted);font-size:12px;margin-top:5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#18181b;padding:8px 11px;font-size:12px;font-weight:650}
+.btn:hover{background:#f4f4f5}.btn.primary{background:#18181b;border-color:#18181b;color:#fff}.btn.danger{color:#b91c1c}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.stat{border:1px solid var(--line);border-radius:9px;background:#fff;padding:13px 14px;min-width:0}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.stat-value{font-size:24px;font-weight:800;margin-top:4px}.stat-note{font-size:10px;color:var(--muted);margin-top:3px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.card-title{font-size:14px;font-weight:750}.card-note{font-size:11px;color:var(--muted);margin-top:2px}
+.card-body{padding:14px}.table-wrap{overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{background:#fafafa;color:#71717a;font-size:11px;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+td{font-size:12px;padding:10px;border-bottom:1px solid #f1f1f2;vertical-align:top}
+tr:last-child td{border-bottom:0}
+.sub{font-size:11px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 7px;font-size:10px;background:#fff;color:#52525b;white-space:nowrap}
+.pill.todo{background:#fafafa}.pill.progress{background:var(--blue-bg);border-color:#dbeafe;color:var(--blue)}
+.pill.done{background:var(--green-bg);border-color:#dcfce7;color:var(--green)}
+.pill.high{background:var(--red-bg);border-color:#fecaca;color:var(--red)}
+.pill.medium{background:var(--amber-bg);border-color:#fde68a;color:var(--amber)}
+.pill.low{background:#f4f4f5}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) repeat(2,190px) auto;gap:8px;margin-bottom:14px}
+.toolbar input,.toolbar select,.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:9px 10px;font-size:13px}
+.field textarea{min-height:88px;resize:vertical}
+.field label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:#52525b}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field.full{grid-column:1/-1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.empty{padding:28px;text-align:center;color:#a1a1aa;font-size:12px}
+.row-actions{display:flex;flex-wrap:wrap;gap:5px}
+.mini{border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 7px;font-size:10px;font-weight:650}
+.mini.primary{background:#18181b;color:#fff;border-color:#18181b}.mini.danger{color:#b91c1c}
+.loading{padding:50px;text-align:center;color:var(--muted)}
+.error{padding:12px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:8px;margin-bottom:14px;font-size:12px}
+.matrix{min-width:1000px}.matrix td.center,.matrix th.center{text-align:center}
+.load{display:inline-grid;place-items:center;min-width:30px;height:28px;border-radius:6px;border:1px solid var(--line);font-size:11px;font-weight:700}
+.load.l0{background:#fafafa}.load.l1{background:#f0fdf4;color:#166534}.load.l2{background:#eff6ff;color:#1d4ed8}
+.load.l3{background:#fffbeb;color:#92400e}.load.l4,.load.l5{background:#fef2f2;color:#b91c1c}
+.load.leave-day{background:#f5f3ff;color:#6d28d9}.load.leave-conflict{background:#fef2f2;color:#b91c1c}
+.task-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.task-column{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.task-column-head{padding:10px 12px;background:#fafafa;border-bottom:1px solid var(--line);font-size:12px;font-weight:750}
+.task-card{padding:11px 12px;border-bottom:1px solid #f1f1f2}.task-card:last-child{border-bottom:0}
+.task-title{font-size:12px;font-weight:750;line-height:1.4}.task-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.app-groups{display:grid;gap:14px}.app-group{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.app-group-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fafafa;border-bottom:1px solid var(--line)}
+.app-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px}
+.app-card{border:1px solid var(--line);border-radius:8px;padding:12px;min-height:185px;display:flex;flex-direction:column}
+.app-icon{width:38px;height:38px;border-radius:8px;background:#18181b;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+.app-name{font-size:13px;font-weight:750;margin-top:9px}.app-desc{font-size:11px;color:#52525b;line-height:1.5;margin-top:4px;flex:1}
+.modal-backdrop{position:fixed;inset:0;background:rgba(24,24,27,.34);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal-backdrop.show{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.16)}
+.modal-head,.modal-foot{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}.modal-head{border-bottom:1px solid var(--line)}.modal-foot{border-top:1px solid var(--line)}
+.modal-body{padding:15px}.modal-title{font-weight:800;font-size:15px}
+.toast{position:fixed;right:18px;bottom:18px;background:#18181b;color:#fff;border-radius:8px;padding:10px 12px;font-size:12px;z-index:200;display:none;max-width:360px}
+.toast.show{display:block}.toast.error-toast{background:#991b1b}
+.mobile-nav{display:none}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}.app-grid{grid-template-columns:repeat(2,1fr)}.task-columns{grid-template-columns:1fr}}
+@media(max-width:760px){
+  .app{display:block}.sidebar{display:none}.main{padding:14px 12px 75px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:80;overflow:auto}
+  .mobile-nav button{border:0;background:#fff;padding:10px 12px;font-size:10px;white-space:nowrap}.mobile-nav button.active{font-weight:800;background:#f4f4f5}
+  .stats,.grid2,.grid3,.form-grid,.toolbar,.app-grid{grid-template-columns:1fr}.topbar{flex-direction:column}.toolbar input,.toolbar select,.field input,.field select,.field textarea{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Rekap Kerja Asdep PPP<small>Asdep Pemberdayaan Partisipasi Publik</small></div>
+    <div class="nav" id="nav"></div>
+  </aside>
+  <main class="main">
+    <div id="errorBox"></div>
+    <div id="page"><div class="loading">Memuat aplikasi…</div></div>
+  </main>
+</div>
+<div class="mobile-nav" id="mobileNav"></div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="modalTitle"></div><button class="btn" onclick="closeModal()">Tutup</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/*
+  Netlify frontend.
+  Recommended production setup:
+  - index.html is hosted by Netlify/GitHub
+  - POST /api is proxied by a Netlify Function to Apps Script
+  - Code.gs above is deployed as Apps Script Web App backend
+
+  If you already have your own proxy endpoint, change API_ENDPOINT below.
+*/
+const API_ENDPOINT = '/api';
+
+const PAGES=[
+  ['workload','Ringkasan Pekerjaan'],
+  ['trend','Tren Pekerjaan'],
+  ['taskmatrix','Kelola Tugas'],
+  ['taskrecap','Tugas Saya'],
+  ['documents','Dokumen'],
+  ['pics','List PIC Yanlik'],
+  ['blast','Blast Project'],
+  ['apps','Aplikasi Tim']
+];
+
+const state={
+  page:new URLSearchParams(location.search).get('page')||'workload',
+  model:null,
+  bootstrap:null,
+  week:'',
+  trendFilters:{period:'all',program:'',activity:''}
+};
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function j(v){try{return JSON.parse(v||'[]')}catch(_){return[]}}
+function qs(sel,root=document){return root.querySelector(sel)}
+function qsa(sel,root=document){return [...root.querySelectorAll(sel)]}
+function statusLabel(s){return s==='done'?'Selesai':s==='progress'?'Sedang Dikerjakan':'Perlu Dikerjakan'}
+function priorityClass(p){return p==='Tinggi'?'high':p==='Rendah'?'low':'medium'}
+function fmtDate(v){if(!v)return'—';const d=new Date(v.length===10?v+'T00:00:00':v);return isNaN(d)?v:d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}
+function showToast(msg,error=false){const t=qs('#toast');t.textContent=msg;t.className='toast show'+(error?' error-toast':'');setTimeout(()=>t.className='toast',2800)}
+function setError(msg=''){qs('#errorBox').innerHTML=msg?`<div class="error">${esc(msg)}</div>`:''}
+
+async function api(action,payload={}){
+  const READ_ACTIONS=new Set([
+    'bootstrap',
+    'getPage',
+    'taskDetail'
+  ]);
+
+  if(READ_ACTIONS.has(action)){
+    const params=new URLSearchParams();
+    params.set('action',action);
+
+    Object.entries(payload||{}).forEach(([key,value])=>{
+      if(value===undefined||value===null||value==='') return;
+      params.set(key,String(value));
+    });
+
+    const res=await fetch(
+      API_ENDPOINT+'?'+params.toString(),
+      {
+        method:'GET',
+        headers:{
+          'Accept':'application/json'
+        }
+      }
+    );
+
+    const text=await res.text();
+    let out;
+
+    try{
+      out=JSON.parse(text);
+    }catch(_){
+      throw new Error(
+        'API tidak mengembalikan JSON.'
+      );
+    }
+
+    if(!res.ok){
+      throw new Error(
+        out.error||('HTTP '+res.status)
+      );
+    }
+
+    if(!out.success){
+      throw new Error(
+        out.error||'Terjadi kesalahan.'
+      );
+    }
+
+    return out.data;
+  }
+
+  const res=await fetch(API_ENDPOINT,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    },
+    body:JSON.stringify({
+      action,
+      payload
+    })
+  });
+
+  const text=await res.text();
+  let out;
+
+  try{
+    out=JSON.parse(text);
+  }catch(_){
+    throw new Error(
+      'API tidak mengembalikan JSON.'
+    );
+  }
+
+  if(!res.ok){
+    throw new Error(
+      out.error||('HTTP '+res.status)
+    );
+  }
+
+  if(!out.success){
+    throw new Error(
+      out.error||'Terjadi kesalahan.'
+    );
+  }
+
+  return out.data;
+}
+
+function buildNav(){
+  const html=PAGES.map(([key,label])=>`<button class="${state.page===key?'active':''}" onclick="navigate('${key}')">${label}</button>`).join('');
+  qs('#nav').innerHTML=html;
+  qs('#mobileNav').innerHTML=PAGES.map(([key,label])=>`<button class="${state.page===key?'active':''}" onclick="navigate('${key}')">${label}</button>`).join('');
+}
+
+function navigate(page,replace=false){
+  state.page=page;state.model=null;setError('');
+  const url=new URL(location.href);url.searchParams.set('page',page);
+  history[replace?'replaceState':'pushState']({},'',url);
+  buildNav();loadPage();
+}
+window.addEventListener('popstate',()=>{state.page=new URLSearchParams(location.search).get('page')||'workload';buildNav();loadPage()});
+
+async function loadPage(extra={}){
+  qs('#page').innerHTML='<div class="loading">Memuat data…</div>';
+  try{
+    state.model=await api('getPage',{
+      page:state.page,
+      week:extra.week??state.week,
+      blastId:extra.blastId||''
+    });
+    if(state.page==='workload' && state.model.workload)state.week=state.model.workload.weekKey||'';
+    renderCurrent();
+  }catch(err){setError(err.message);qs('#page').innerHTML='<div class="empty">Data gagal dimuat.</div>'}
+}
+
+function renderCurrent(){
+  const map={
+    workload:renderWorkload,trend:renderTrend,taskmatrix:renderTaskMatrix,
+    taskrecap:renderTaskRecap,documents:renderDocuments,pics:renderPics,
+    blast:renderBlast,apps:renderApps
+  };
+  (map[state.page]||renderWorkload)();
+}
+
+function topbar(title,subtitle,action=''){
+  return `<div class="topbar"><div><h1>${esc(title)}</h1><div class="subtitle">${esc(subtitle)}</div></div>${action}</div>`;
+}
+function stat(label,value,note=''){return `<div class="stat"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div>${note?`<div class="stat-note">${esc(note)}</div>`:''}</div>`}
+
+function renderAgenda(agenda,title){
+  const rows=(agenda&&agenda.items)||agenda||[];
+  return `<div class="card"><div class="card-head"><div><div class="card-title">${esc(title)}</div><div class="card-note">${rows.length} agenda</div></div></div>
+  ${rows.length?`<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Tugas</th><th>PIC</th><th>Detail</th><th>Status</th></tr></thead><tbody>${rows.map(x=>`<tr>
+    <td>${esc(x.clockLabel||x.timeLabel||'—')}</td><td><strong>${esc(x.title)}</strong><div class="sub">${esc(x.program||'')} · ${esc(x.substansi||x.activity||'')}</div></td>
+    <td>${esc((x.picList||[]).join(', ')||x.pic||'—')}</td><td><button class="mini" onclick="showTaskDetail('${esc(x.id)}')">Detail</button></td>
+    <td><span class="pill ${esc(x.statusKey||x.status||'todo')}">${esc(x.statusLabel||x.status||'')}</span></td>
+  </tr>`).join('')}</tbody></table></div>`:'<div class="empty">Tidak ada agenda.</div>'}</div>`;
+}
+
+function matrixTable(work){
+  if(!work||!work.rows)return'<div class="empty">Tidak ada data.</div>';
+  return `<div class="table-wrap"><table class="matrix"><thead><tr><th>Anggota Tim</th>${work.days.map(d=>`<th class="center">${esc(d)}</th>`).join('')}<th class="center">Total</th></tr></thead><tbody>
+  ${work.rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td>${r.days.map(d=>`<td class="center"><span class="load ${esc(d.loadClass)}" title="${esc((d.tasks||[]).map(t=>t.title).join(' • '))}">${esc(d.displayValue??d.count)}</span></td>`).join('')}<td class="center"><strong>${r.total}</strong></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function classTable(work){
+  if(!work||!work.rows)return'<div class="empty">Tidak ada data.</div>';
+  return `<div class="table-wrap"><table class="matrix"><thead><tr><th>${esc(work.dimensionLabel||'Klasifikasi')}</th>${work.days.map(d=>`<th class="center">${esc(d)}</th>`).join('')}<th class="center">Total</th></tr></thead><tbody>
+  ${work.rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td>${r.days.map(d=>`<td class="center"><span class="load ${esc(d.loadClass)}">${d.count}</span></td>`).join('')}<td class="center"><strong>${r.total}</strong></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function renderWorkload(){
+  const m=state.model,w=m.workload||{};
+  qs('#page').innerHTML=
+    topbar('Ringkasan Pekerjaan','Ringkasan beban kerja, agenda, dan ketersediaan tim.',
+      `<div class="row-actions"><button class="btn" onclick="changeWeek('${esc(w.prevWeek||'')}')">← Minggu</button><button class="btn" onclick="changeWeek('${esc(w.nextWeek||'')}')">Minggu →</button><button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button></div>`) +
+    `<div class="stats">${stat('Penugasan Minggu Ini',w.totalAssignments||0,w.weekLabel||'')}${stat('PIC Aktif',w.activePics||0,'anggota tim')}${stat('Hari Tersibuk',w.busiestDay||'—',(w.busiestCount||0)+' penugasan')}${stat('Cuti',w.leavePeopleCount||0,(w.leaveConflictCount||0)+' konflik')}</div>`+
+    `<div class="grid2">${renderAgenda(m.todayAgenda,'Agenda Hari Ini')}${renderAgenda(m.tomorrowAgenda,'Agenda Besok')}</div>`+
+    `<div class="card"><div class="card-head"><div><div class="card-title">Distribusi Mingguan per Anggota Tim</div><div class="card-note">${esc(w.weekLabel||'')}</div></div><button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button></div>${matrixTable(w)}</div>`+
+    `<div class="grid2"><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div></div>`+
+    renderLeaveList(m.teamAvailability||[]);
+}
+function changeWeek(week){state.week=week;loadPage({week})}
+function renderLeaveList(items){
+  return `<div class="card"><div class="card-head"><div><div class="card-title">Ketersediaan Tim</div><div class="card-note">Cuti pada minggu terpilih.</div></div></div>${items.length?`<div class="table-wrap"><table><thead><tr><th>PIC</th><th>Periode</th><th>Catatan</th><th>Konflik</th><th>Aksi</th></tr></thead><tbody>${items.map(x=>`<tr><td><strong>${esc(x.pic)}</strong></td><td>${esc(x.dateLabel||'')}</td><td>${esc(x.note||'—')}</td><td>${x.conflictDays||0}</td><td><div class="row-actions"><button class="mini" onclick='openLeaveForm(${JSON.stringify(x)})'>Edit</button><button class="mini danger" onclick="deleteLeave('${esc(x.id)}')">Hapus</button></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Tidak ada cuti pada minggu ini.</div>'}</div>`;
+}
+
+function renderTrend(){
+  const tasks=j(state.model.trendWork?.tasksJson);
+  const programs=['',...(state.bootstrap?.programs||[])], acts=['',...(state.bootstrap?.activities||[])];
+  const f=state.trendFilters;
+  const filtered=tasks.filter(t=>(!f.program||t.program===f.program)&&(!f.activity||t.substansi===f.activity));
+  const done=filtered.filter(t=>t.status==='done').length, overdue=filtered.filter(t=>t.overdue).length;
+  const ontime=filtered.filter(t=>t.status==='done'&&t.completedAt&&t.endDate&&String(t.completedAt).slice(0,10)<=t.endDate).length;
+  const monthly={};
+  filtered.forEach(t=>{const d=(t.createdAt||t.startDate||t.updatedAt||'').slice(0,7);if(!d)return;monthly[d]=monthly[d]||{in:0,done:0};monthly[d].in++;if(t.status==='done')monthly[d].done++});
+  const monthRows=Object.keys(monthly).sort().slice(-12);
+  qs('#page').innerHTML=topbar('Tren Pekerjaan','Analisis historis penugasan dan penyelesaian.')+
+  `<div class="toolbar"><select id="trendProgram" onchange="trendFilter()">${programs.map(x=>`<option value="${esc(x)}" ${x===f.program?'selected':''}>${esc(x||'Semua Program')}</option>`).join('')}</select><select id="trendActivity" onchange="trendFilter()">${acts.map(x=>`<option value="${esc(x)}" ${x===f.activity?'selected':''}>${esc(x||'Semua Aktivitas')}</option>`).join('')}</select><div></div><button class="btn" onclick="resetTrend()">Reset</button></div>`+
+  `<div class="stats">${stat('Total Tugas Masuk',filtered.length)}${stat('Total Tugas Selesai',done)}${stat('Terlambat',overdue)}${stat('Ketepatan Waktu',done?Math.round(ontime/done*100)+'%':'—')}</div>`+
+  `<div class="card"><div class="card-head"><div><div class="card-title">Ringkasan Bulanan</div><div class="card-note">Tugas masuk dan selesai.</div></div></div><div class="table-wrap"><table><thead><tr><th>Bulan</th><th>Masuk</th><th>Selesai</th></tr></thead><tbody>${monthRows.map(k=>`<tr><td>${esc(k)}</td><td>${monthly[k].in}</td><td>${monthly[k].done}</td></tr>`).join('')}</tbody></table></div></div>`+
+  renderTeamTrend(filtered);
+}
+function trendFilter(){state.trendFilters.program=qs('#trendProgram').value;state.trendFilters.activity=qs('#trendActivity').value;renderTrend()}
+function resetTrend(){state.trendFilters={period:'all',program:'',activity:''};renderTrend()}
+function renderTeamTrend(tasks){
+  const team=state.bootstrap?.pics||[], rows=team.map(name=>{const mine=tasks.filter(t=>(t.picList||[]).includes(name));return{name,total:mine.length,done:mine.filter(t=>t.status==='done').length,late:mine.filter(t=>t.overdue).length}});
+  return `<div class="card"><div class="card-head"><div><div class="card-title">Tren Anggota Tim</div></div></div><div class="table-wrap"><table><thead><tr><th>Anggota Tim</th><th>Penugasan</th><th>Selesai</th><th>Terlambat</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${r.total}</td><td>${r.done}</td><td>${r.late}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function renderTaskMatrix(){
+  const tasks=state.model.tasks||[];
+  qs('#page').innerHTML=topbar('Kelola Tugas','Kelola seluruh tugas berdasarkan status.',`<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`)+
+  `<div class="toolbar"><input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()"><select id="taskPic" onchange="filterTaskMatrix()"><option value="">Semua PIC</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProgram" onchange="filterTaskMatrix()"><option value="">Semua Program</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn" onclick="resetTaskFilters()">Reset</button></div>`+
+  `<div class="task-columns" id="taskColumns"></div>`;
+  renderTaskColumns(tasks);
+}
+function filteredTasks(){
+  const tasks=state.model.tasks||[], q=(qs('#taskSearch')?.value||'').toLowerCase(), pic=qs('#taskPic')?.value||'', prog=qs('#taskProgram')?.value||'';
+  return tasks.filter(t=>(!q||(String(t.title)+' '+String(t.tag)).toLowerCase().includes(q))&&(!pic||(t.picList||[]).includes(pic))&&(!prog||t.program===prog));
+}
+function filterTaskMatrix(){renderTaskColumns(filteredTasks())}
+function resetTaskFilters(){if(qs('#taskSearch'))qs('#taskSearch').value='';if(qs('#taskPic'))qs('#taskPic').value='';if(qs('#taskProgram'))qs('#taskProgram').value='';renderTaskColumns(state.model.tasks||[])}
+function renderTaskColumns(tasks){
+  const statuses=[['todo','Perlu Dikerjakan'],['progress','Sedang Dikerjakan'],['done','Selesai']];
+  qs('#taskColumns').innerHTML=statuses.map(([key,label])=>`<section class="task-column"><div class="task-column-head">${label} · ${tasks.filter(t=>t.status===key).length}</div>${tasks.filter(t=>t.status===key).map(renderTaskCard).join('')||'<div class="empty">Kosong</div>'}</section>`).join('');
+}
+function renderTaskCard(t){
+  return `<div class="task-card"><div class="task-title">${esc(t.title)}</div><div class="sub">${esc(t.timeLabel||'Tanpa tanggal')}</div><div class="task-meta"><span class="pill">${esc(t.program||'')}</span><span class="pill">${esc(t.substansi||'')}</span><span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span>${t.overdue?'<span class="pill high">Terlambat</span>':''}</div><div class="sub" style="margin-top:6px">${esc((t.picList||[]).join(', '))}</div><div class="row-actions" style="margin-top:8px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button><button class="mini" onclick="openTaskForm('${esc(t.id)}')">Edit</button>${t.status==='todo'?`<button class="mini" onclick="setTaskStatus('${esc(t.id)}','progress')">Mulai</button>`:''}${t.status!=='done'?`<button class="mini primary" onclick="completeTask('${esc(t.id)}')">Selesai</button>`:''}<button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button></div></div>`;
+}
+
+function renderTaskRecap(){
+  const tasks=j(state.model.taskRecap?.tasksJson);
+  qs('#page').innerHTML=topbar('Tugas Saya','Ringkasan pekerjaan per anggota tim.')+
+  `<div class="toolbar"><select id="recapPic" onchange="renderSelectedRecap()"><option value="">Pilih Nama Anda</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><div></div><div></div><button class="btn" onclick="navigate('taskmatrix')">Kelola Tugas</button></div><div id="recapContent"><div class="empty">Pilih nama untuk melihat tugas.</div></div>`;
+  window.__recapTasks=tasks;
+}
+function renderSelectedRecap(){
+  const pic=qs('#recapPic').value, tasks=(window.__recapTasks||[]).filter(t=>(t.picList||[]).includes(pic));
+  if(!pic){qs('#recapContent').innerHTML='<div class="empty">Pilih nama untuk melihat tugas.</div>';return}
+  const todo=tasks.filter(t=>t.status==='todo').length, progress=tasks.filter(t=>t.status==='progress').length, done=tasks.filter(t=>t.status==='done').length;
+  qs('#recapContent').innerHTML=`<div class="stats">${stat('Total',tasks.length)}${stat('Perlu Dikerjakan',todo)}${stat('Sedang Dikerjakan',progress)}${stat('Selesai',done)}</div><div class="card"><div class="card-head"><div><div class="card-title">Riwayat Penugasan</div></div></div><div class="table-wrap"><table><thead><tr><th>Tugas</th><th>Waktu</th><th>Prioritas</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${tasks.map(t=>`<tr><td><strong>${esc(t.title)}</strong><div class="sub">${esc(t.program)} · ${esc(t.substansi)}</div></td><td>${esc(t.timeLabel||'—')}</td><td>${esc(t.priority)}</td><td><span class="pill ${esc(t.status)}">${esc(statusLabel(t.status))}</span></td><td><div class="row-actions"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>${t.status==='todo'?`<button class="mini" onclick="setTaskStatus('${esc(t.id)}','progress',true)">Mulai</button>`:''}${t.status!=='done'?`<button class="mini primary" onclick="completeTask('${esc(t.id)}',true)">Selesai</button>`:''}</div></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function renderDocuments(){
+  const docs=state.model.docs||[], counts=state.model.docProgramCounts||{};
+  qs('#page').innerHTML=topbar('Inventaris Dokumen','Tempat seluruh dokumen yang diinventarisasi.',`<button class="btn primary" onclick="openDocumentForm()">+ Tambah Dokumen</button>`)+
+  `<div class="stats">${stat('Total Dokumen',docs.length)}${(state.bootstrap?.programs||[]).map(p=>stat(p,counts[p]||0)).join('')}</div>`+
+  `<div class="toolbar"><input id="docSearch" placeholder="Cari dokumen..." oninput="filterDocuments()"><select id="docProgram" onchange="filterDocuments()"><option value="">Semua Program</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="docTag" onchange="filterDocuments()"><option value="">Semua Tag</option>${(state.model.documentTags||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn" onclick="resetDocFilters()">Reset</button></div>`+
+  `<div class="card"><div class="card-head"><div><div class="card-title">Daftar Dokumen</div><div class="card-note" id="docCount">${docs.length} dokumen</div></div></div><div class="table-wrap"><table><thead><tr><th>No</th><th>Nama Dokumen</th><th>Program</th><th>Tag</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody id="docRows"></tbody></table></div></div>`;
+  renderDocumentRows(docs);
+}
+function filteredDocs(){
+  const docs=state.model.docs||[], q=(qs('#docSearch')?.value||'').toLowerCase(), p=qs('#docProgram')?.value||'', tag=qs('#docTag')?.value||'';
+  return docs.filter(d=>(!q||(d.name+' '+d.linkLabel+' '+d.tag+' '+d.notes).toLowerCase().includes(q))&&(!p||d.program===p)&&(!tag||d.tag===tag));
+}
+function filterDocuments(){renderDocumentRows(filteredDocs())}
+function resetDocFilters(){qs('#docSearch').value='';qs('#docProgram').value='';qs('#docTag').value='';renderDocumentRows(state.model.docs||[])}
+function renderDocumentRows(docs){
+  qs('#docCount').textContent=docs.length+' dokumen';qs('#docRows').innerHTML=docs.length?docs.map((d,i)=>`<tr><td>${i+1}</td><td><strong>${esc(d.name)}</strong><div class="sub">${esc(d.linkLabel||'')}</div></td><td><span class="pill">${esc(d.program)}</span></td><td>${esc(d.tag)}</td><td>${esc(d.notes||'—')}</td><td><div class="row-actions">${d.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(d.url)}">Buka ↗</a>`:''}<button class="mini" onclick='openDocumentForm(${JSON.stringify(d)})'>Edit</button><button class="mini danger" onclick="deleteDocument('${esc(d.id)}')">Hapus</button></div></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">Tidak ada dokumen.</div></td></tr>';
+}
+
+function renderPics(){
+  const pics=state.model.pics||[];
+  qs('#page').innerHTML=topbar('List PIC Yanlik','Master PIC internal dan PIC instansi.',`<button class="btn primary" onclick="openPicForm()">+ Tambah PIC</button>`)+
+  `<div class="stats">${stat('Total Data',pics.length)}${stat('Kabupaten',pics.filter(x=>x.kategoriInstansi==='Kabupaten').length)}${stat('Kota',pics.filter(x=>x.kategoriInstansi==='Kota').length)}${stat('Provinsi/KL',pics.filter(x=>['Provinsi','Kementerian/Lembaga'].includes(x.kategoriInstansi)).length)}</div>`+
+  `<div class="card"><div class="table-wrap"><table><thead><tr><th>No</th><th>Nama Instansi</th><th>Kategori</th><th>PIC Yanlik</th><th>PIC Instansi</th><th>Nomor HP</th><th>Aksi</th></tr></thead><tbody>${pics.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${esc(p.namaInstansi)}</strong></td><td>${esc(p.kategoriInstansi)}</td><td>${esc(p.namaPicYanlik||'—')}</td><td>${esc(p.namaPicInstansi||'—')}</td><td>${esc(p.nomorHandphonePicInstansi||'—')}</td><td><div class="row-actions"><button class="mini" onclick='openPicForm(${JSON.stringify(p)})'>Edit</button><button class="mini danger" onclick="deletePic('${esc(p.id)}')">Hapus</button></div></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function renderApps(){
+  const apps=state.model.apps||[], programs=state.bootstrap?.programs||[];
+  qs('#page').innerHTML=topbar('Aplikasi Tim','Katalog aplikasi, dashboard, dan alat kerja tim.',`<button class="btn primary" onclick="openAppForm()">+ Tambah Aplikasi</button>`)+
+  `<div class="stats">${stat('Total Aplikasi',apps.length)}${stat('Aktif',apps.filter(x=>x.active).length)}${stat('Program Terisi',new Set(apps.map(x=>x.program)).size)}${stat('Kategori',new Set(apps.map(x=>x.category)).size)}</div>`+
+  `<div class="toolbar"><input id="appSearch" placeholder="Cari aplikasi..." oninput="filterApps()"><select id="appProgram" onchange="filterApps()"><option value="">Semua Program</option>${programs.map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="appCategory" onchange="filterApps()"><option value="">Semua Kategori</option>${(state.bootstrap?.appCategories||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn" onclick="resetAppFilters()">Reset</button></div><div id="appGroups"></div>`;
+  renderAppGroups(apps);
+}
+function filteredApps(){
+  const a=state.model.apps||[],q=(qs('#appSearch')?.value||'').toLowerCase(),p=qs('#appProgram')?.value||'',c=qs('#appCategory')?.value||'';
+  return a.filter(x=>(!q||(x.name+' '+x.description+' '+x.badge).toLowerCase().includes(q))&&(!p||x.program===p)&&(!c||x.category===c))
+}
+function filterApps(){renderAppGroups(filteredApps())}
+function resetAppFilters(){qs('#appSearch').value='';qs('#appProgram').value='';qs('#appCategory').value='';renderAppGroups(state.model.apps||[])}
+function renderAppGroups(apps){
+  const programs=state.bootstrap?.programs||[];
+  qs('#appGroups').innerHTML=`<div class="app-groups">${programs.map(p=>{const items=apps.filter(x=>x.program===p);if(!items.length)return'';return`<section class="app-group"><div class="app-group-head"><strong>${esc(p)}</strong><span class="pill">${items.length} aplikasi</span></div><div class="app-grid">${items.map(x=>`<article class="app-card"><div style="display:flex;justify-content:space-between"><div class="app-icon">${esc(x.shortName)}</div><span class="pill ${x.active?'done':'todo'}">${x.active?'Aktif':'Nonaktif'}</span></div><div class="app-name">${esc(x.name)}</div><div class="app-desc">${esc(x.description||'Belum ada deskripsi.')}</div><div class="task-meta"><span class="pill">${esc(x.category)}</span>${x.badge?`<span class="pill">${esc(x.badge)}</span>`:''}</div><div class="row-actions" style="margin-top:10px"><button class="mini" onclick='openAppForm(${JSON.stringify(x)})'>Edit</button>${x.active?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(x.url)}">Buka ↗</a>`:''}</div></article>`).join('')}</div></section>`}).join('')}</div>`;
+}
+
+function renderBlast(){
+  const blasts=state.model.blasts||[];
+  qs('#page').innerHTML=topbar('Blast Project','Project komunikasi WhatsApp/Email dan checklist pengiriman.',`<button class="btn primary" onclick="openBlastForm()">+ Project Baru</button>`)+
+  `<div class="stats">${stat('Total Project',blasts.length)}${stat('Aktif',blasts.filter(x=>x.status==='Aktif').length)}${stat('Selesai',blasts.filter(x=>x.status==='Selesai').length)}${stat('Penerima',blasts.reduce((s,x)=>s+(Number(x.recipientCount)||0),0))}</div>`+
+  `<div class="card"><div class="table-wrap"><table><thead><tr><th>Project</th><th>Channel</th><th>Status</th><th>Penerima</th><th>Terkirim</th><th>Aksi</th></tr></thead><tbody>${blasts.map(b=>`<tr><td><strong>${esc(b.namaProject)}</strong></td><td>${esc(b.channel)}</td><td>${esc(b.status)}</td><td>${b.recipientCount||0}</td><td>${b.sentCount||0}</td><td><div class="row-actions"><button class="mini" onclick="viewBlast('${esc(b.id)}')">Detail</button><button class="mini" onclick='openBlastForm(${JSON.stringify(b)})'>Edit</button><button class="mini danger" onclick="deleteBlast('${esc(b.id)}')">Hapus</button></div></td></tr>`).join('')}</tbody></table></div></div><div id="blastDetail"></div>`;
+}
+async function viewBlast(id){
+  try{
+    const m=await api('getPage',{page:'blast',blastId:id});
+    const d=m.blastDetail;if(!d){showToast('Detail project tidak ditemukan.',true);return}
+    qs('#blastDetail').innerHTML=`<div class="card"><div class="card-head"><div><div class="card-title">${esc(d.project.namaProject)}</div><div class="card-note">${d.recipients.length} penerima</div></div></div><div class="table-wrap"><table><thead><tr><th>Instansi</th><th>PIC</th><th>Email</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${d.recipients.map(r=>`<tr><td><strong>${esc(r.namaInstansi)}</strong></td><td>${esc(r.namaPicInstansi||'—')}</td><td><input value="${esc(r.email||'')}" onchange="saveRecipientEmail('${esc(r.id)}',this.value)" style="min-width:190px;border:1px solid var(--line);border-radius:6px;padding:5px"></td><td>${r.sent?'Terkirim':'Belum'}</td><td><div class="row-actions">${r.waWebUrl?`<a class="mini" target="_blank" href="${esc(r.waWebUrl)}">WhatsApp</a>`:''}${r.gmailUrl?`<a class="mini" target="_blank" href="${esc(r.gmailUrl)}">Gmail</a>`:''}<button class="mini" onclick="toggleRecipientSent('${esc(r.id)}',${!r.sent},'${esc(id)}')">${r.sent?'Batalkan':'Tandai Terkirim'}</button></div></td></tr>`).join('')}</tbody></table></div></div>`;
+  }catch(e){showToast(e.message,true)}
+}
+
+function openModal(title,body,foot){qs('#modalTitle').textContent=title;qs('#modalBody').innerHTML=body;qs('#modalFoot').innerHTML=foot;qs('#modalBackdrop').classList.add('show')}
+function closeModal(){qs('#modalBackdrop').classList.remove('show');qs('#modalBody').innerHTML='';qs('#modalFoot').innerHTML=''}
+qs('#modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+function openTaskForm(id=''){
+  const t=id?(state.model?.tasks||[]).find(x=>x.id===id):null;
+  const x=t||{id:'',title:'',program:'',substansi:'',tag:'',picList:[],picEmail:'',taskAssigner:'',timeType:'none',startDate:'',endDate:'',startTime:'',endTime:'',dayMode:'workdays',priority:'Sedang',status:'todo',description:'',resultText:''};
+  const body=`<div class="form-grid">
+    <div class="field full"><label>Judul Tugas *</label><input id="fTitle" value="${esc(x.title)}"></div>
+    <div class="field"><label>Program *</label><select id="fProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.program===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+    <div class="field"><label>Aktivitas *</label><select id="fActivity"><option value="">Pilih</option>${(state.bootstrap?.activities||[]).map(v=>`<option ${x.substansi===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+    <div class="field"><label>Tag *</label><input id="fTag" value="${esc(x.tag||'')}"></div>
+    <div class="field"><label>Pembuat Tugas</label><select id="fAssigner"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${x.taskAssigner===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+    <div class="field full"><label>PIC *</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">${(state.bootstrap?.pics||[]).map(v=>`<label style="font-weight:400"><input type="checkbox" name="fPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}> ${esc(v)}</label>`).join('')}</div></div>
+    <div class="field"><label>Jenis Waktu</label><select id="fTimeType" onchange="toggleTaskDates()"><option value="none" ${x.timeType==='none'?'selected':''}>Tanpa Tanggal</option><option value="date" ${x.timeType==='date'?'selected':''}>Tanggal</option><option value="period" ${x.timeType==='period'?'selected':''}>Periode</option></select></div>
+    <div class="field"><label>Hari Pelaksanaan</label><select id="fDayMode"><option value="workdays" ${x.dayMode!=='all_days'?'selected':''}>Hari Kerja</option><option value="all_days" ${x.dayMode==='all_days'?'selected':''}>Semua Hari</option></select></div>
+    <div class="field task-date"><label>Tanggal Mulai</label><input type="date" id="fStartDate" value="${esc(x.startDate||'')}"></div>
+    <div class="field task-date"><label>Tanggal Selesai</label><input type="date" id="fEndDate" value="${esc(x.endDate||'')}"></div>
+    <div class="field task-date"><label>Jam Mulai</label><input type="time" id="fStartTime" value="${esc(x.startTime||'')}"></div>
+    <div class="field task-date"><label>Jam Selesai</label><input type="time" id="fEndTime" value="${esc(x.endTime||'')}"></div>
+    <div class="field"><label>Prioritas</label><select id="fPriority">${['Rendah','Sedang','Tinggi'].map(v=>`<option ${x.priority===v?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="field"><label>Status</label><select id="fStatus"><option value="todo" ${x.status==='todo'?'selected':''}>Perlu Dikerjakan</option><option value="progress" ${x.status==='progress'?'selected':''}>Sedang Dikerjakan</option><option value="done" ${x.status==='done'?'selected':''}>Selesai</option></select></div>
+    <div class="field full"><label>Deskripsi</label><textarea id="fDesc">${esc(x.description||'')}</textarea></div>
+  </div>`;
+  openModal(x.id?'Edit Tugas':'Buat Tugas',body,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveTaskForm('${esc(x.id||'')}')">Simpan Tugas</button>`);
+  toggleTaskDates();
+}
+function toggleTaskDates(){const show=qs('#fTimeType')?.value!=='none';qsa('.task-date').forEach(el=>el.style.display=show?'block':'none')}
+async function saveTaskForm(id){
+  try{
+    const payload={id,title:qs('#fTitle').value,program:qs('#fProgram').value,substansi:qs('#fActivity').value,tag:qs('#fTag').value,pic:qsa('input[name="fPic"]:checked').map(x=>x.value),picEmail:'',taskAssigner:qs('#fAssigner').value,taskAssignerOption:qs('#fAssigner').value,timeType:qs('#fTimeType').value,startDate:qs('#fStartDate').value,endDate:qs('#fEndDate').value,startTime:qs('#fStartTime').value,endTime:qs('#fEndTime').value,dayMode:qs('#fDayMode').value,priority:qs('#fPriority').value,status:qs('#fStatus').value,description:qs('#fDesc').value,resultText:''};
+    await api('saveTask',payload);closeModal();showToast('Tugas berhasil disimpan.');await loadPage()
+  }catch(e){showToast(e.message,true)}
+}
+async function setTaskStatus(id,status,recap=false){try{await api('updateTaskStatus',{id,status});showToast('Status diperbarui.');await loadPage();if(recap)setTimeout(renderSelectedRecap,20)}catch(e){showToast(e.message,true)}}
+function completeTask(id,recap=false){openModal('Selesaikan Tugas',`<div class="field"><label>Hasil Penyelesaian *</label><textarea id="completeResult"></textarea></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="submitComplete('${esc(id)}',${recap})">Simpan</button>`)}
+async function submitComplete(id,recap){try{await api('completeTask',{id,resultText:qs('#completeResult').value});closeModal();showToast('Tugas diselesaikan.');await loadPage();if(recap)setTimeout(renderSelectedRecap,20)}catch(e){showToast(e.message,true)}}
+async function deleteTask(id){if(!confirm('Hapus tugas ini?'))return;try{await api('deleteTask',{id});showToast('Tugas dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function showTaskDetail(id){try{const d=await api('taskDetail',{taskId:id});openModal('Detail Tugas',`<div class="form-grid"><div class="field full"><label>Judul</label><strong>${esc(d.title)}</strong></div><div class="field"><label>Program</label>${esc(d.program)}</div><div class="field"><label>Aktivitas</label>${esc(d.activity)}</div><div class="field"><label>Tag</label>${esc(d.tag)}</div><div class="field"><label>Status</label>${esc(d.statusLabel)}</div><div class="field full"><label>PIC</label>${esc((d.picList||[]).join(', '))}</div><div class="field full"><label>Waktu</label>${esc(d.timeLabel)}</div><div class="field full"><label>Deskripsi</label>${esc(d.description||'—')}</div><div class="field full"><label>Hasil</label>${esc(d.resultText||'—')}</div><div class="field full"><label>Lampiran Tugas</label>${attachmentList(d.taskAttachments)}</div><div class="field full"><label>Lampiran Hasil</label>${attachmentList(d.resultAttachments)}</div></div>`,`<button class="btn" onclick="closeModal()">Tutup</button>`)}catch(e){showToast(e.message,true)}}
+function attachmentList(items){return items&&items.length?items.map(a=>a.driveUrl?`<div><a target="_blank" rel="noopener" href="${esc(a.driveUrl)}">${esc(a.fileName)}</a></div>`:`<div>${esc(a.fileName)}</div>`).join(''):'—'}
+
+function openLeaveForm(x={}){openModal(x.id?'Edit Cuti':'Catat Cuti',`<div class="form-grid"><div class="field full"><label>Anggota Tim *</label><select id="leavePic"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${x.pic===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai *</label><input id="leaveStart" type="date" value="${esc(x.startDate||'')}"></div><div class="field"><label>Tanggal Selesai *</label><input id="leaveEnd" type="date" value="${esc(x.endDate||'')}"></div><div class="field full"><label>Catatan</label><textarea id="leaveNote">${esc(x.note||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveLeave('${esc(x.id||'')}')">Simpan</button>`)}
+async function saveLeave(id){try{await api('saveLeave',{id,pic:qs('#leavePic').value,startDate:qs('#leaveStart').value,endDate:qs('#leaveEnd').value,note:qs('#leaveNote').value});closeModal();showToast('Cuti disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function deleteLeave(id){if(!confirm('Hapus data cuti?'))return;try{await api('deleteLeave',{id});showToast('Cuti dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+
+function openDocumentForm(d={}){openModal(d.id?'Edit Dokumen':'Tambah Dokumen',`<div class="form-grid"><div class="field full"><label>Nama Dokumen *</label><input id="dName" value="${esc(d.name||'')}"></div><div class="field"><label>Program *</label><select id="dProgram">${(state.bootstrap?.programs||[]).map(v=>`<option ${d.program===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tag *</label><input id="dTag" value="${esc(d.tag||'')}"></div><div class="field"><label>Label Link</label><input id="dLabel" value="${esc(d.linkLabel||'')}"></div><div class="field"><label>URL</label><input id="dUrl" value="${esc(d.url||'')}"></div><div class="field full"><label>Keterangan</label><textarea id="dNotes">${esc(d.notes||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveDocument('${esc(d.id||'')}')">Simpan</button>`)}
+async function saveDocument(id){try{await api('saveDocument',{id,name:qs('#dName').value,program:qs('#dProgram').value,tag:qs('#dTag').value,linkLabel:qs('#dLabel').value,url:qs('#dUrl').value,notes:qs('#dNotes').value});closeModal();showToast('Dokumen disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function deleteDocument(id){if(!confirm('Hapus dokumen ini?'))return;try{await api('deleteDocument',{id});showToast('Dokumen dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+
+function openPicForm(p={}){openModal(p.id?'Edit PIC':'Tambah PIC',`<div class="form-grid"><div class="field full"><label>Nama Instansi *</label><input id="pInst" value="${esc(p.namaInstansi||'')}"></div><div class="field"><label>Kategori *</label><select id="pCat">${['Kabupaten','Kota','Provinsi','Kementerian/Lembaga'].map(v=>`<option ${p.kategoriInstansi===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>PIC Yanlik</label><select id="pYan"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${p.namaPicYanlik===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Nama PIC Instansi</label><input id="pName" value="${esc(p.namaPicInstansi||'')}"></div><div class="field"><label>Nomor HP</label><input id="pPhone" value="${esc(p.nomorHandphonePicInstansi||'')}"></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="savePic('${esc(p.id||'')}')">Simpan</button>`)}
+async function savePic(id){try{await api('savePic',{id,namaInstansi:qs('#pInst').value,kategoriInstansi:qs('#pCat').value,namaPicYanlik:qs('#pYan').value,namaPicInstansi:qs('#pName').value,nomorHandphonePicInstansi:qs('#pPhone').value});closeModal();showToast('PIC disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function deletePic(id){if(!confirm('Hapus data PIC?'))return;try{await api('deletePic',{id});showToast('PIC dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+
+function openAppForm(a={}){openModal(a.id?'Edit Aplikasi':'Tambah Aplikasi',`<div class="form-grid"><div class="field full"><label>Nama Aplikasi *</label><input id="aName" value="${esc(a.name||'')}"></div><div class="field"><label>Singkatan/Icon *</label><input id="aShort" maxlength="5" value="${esc(a.shortName||'')}"></div><div class="field"><label>Program *</label><select id="aProgram">${(state.bootstrap?.programs||[]).map(v=>`<option ${a.program===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Kategori *</label><select id="aCategory">${(state.bootstrap?.appCategories||[]).map(v=>`<option ${a.category===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Badge</label><input id="aBadge" value="${esc(a.badge||'')}"></div><div class="field full"><label>Link Aplikasi *</label><input id="aUrl" value="${esc(a.url||'')}"></div><div class="field full"><label>Deskripsi</label><textarea id="aDesc">${esc(a.description||'')}</textarea></div><div class="field full"><label><input type="checkbox" id="aActive" ${a.active!==false?'checked':''}> Aktif</label></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveApp('${esc(a.id||'')}')">Simpan</button>`)}
+async function saveApp(id){try{await api('saveApp',{id,name:qs('#aName').value,shortName:qs('#aShort').value,program:qs('#aProgram').value,category:qs('#aCategory').value,badge:qs('#aBadge').value,url:qs('#aUrl').value,description:qs('#aDesc').value,active:qs('#aActive').checked});closeModal();showToast('Aplikasi disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+
+function openBlastForm(b={}){const pics=state.model.pics||[];openModal(b.id?'Edit Blast Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="bName" value="${esc(b.namaProject||'')}"></div><div class="field"><label>Channel</label><select id="bChannel">${['WhatsApp','Email','WhatsApp + Email'].map(v=>`<option ${b.channel===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>Status</label><select id="bStatus">${['Draft','Aktif','Selesai'].map(v=>`<option ${b.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field full"><label>Pilih Instansi *</label><div style="max-height:220px;overflow:auto;border:1px solid var(--line);padding:8px;border-radius:7px">${pics.map(p=>`<label style="display:block;font-size:11px;margin:4px 0"><input type="checkbox" name="bPic" value="${esc(p.id)}"> ${esc(p.namaInstansi)} · ${esc(p.namaPicYanlik||'')}</label>`).join('')}</div></div><div class="field full"><label>Pesan WhatsApp</label><textarea id="bWa">${esc(b.whatsappMessage||'')}</textarea></div><div class="field full"><label>Subjek Email</label><input id="bSubject" value="${esc(b.emailSubject||'')}"></div><div class="field full"><label>Isi Email</label><textarea id="bEmail">${esc(b.emailBody||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveBlast('${esc(b.id||'')}')">Simpan</button>`)}
+async function saveBlast(id){try{await api('saveBlast',{id,namaProject:qs('#bName').value,channel:qs('#bChannel').value,status:qs('#bStatus').value,selectedPicIds:qsa('input[name="bPic"]:checked').map(x=>x.value),whatsappMessage:qs('#bWa').value,emailSubject:qs('#bSubject').value,emailBody:qs('#bEmail').value});closeModal();showToast('Blast Project disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function deleteBlast(id){if(!confirm('Hapus Blast Project?'))return;try{await api('deleteBlast',{id});showToast('Blast Project dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function toggleRecipientSent(id,sent,projectId){try{await api('setBlastSent',{recipientId:id,sent});await viewBlast(projectId)}catch(e){showToast(e.message,true)}}
+async function saveRecipientEmail(id,email){try{await api('saveBlastEmail',{recipientId:id,email});showToast('Email disimpan.')}catch(e){showToast(e.message,true)}}
+
+async function init(){
+  buildNav();
+  try{state.bootstrap=await api('bootstrap');await loadPage()}
+  catch(e){setError(e.message);qs('#page').innerHTML=`<div class="card"><div class="card-body"><strong>Frontend belum terhubung ke API.</strong><div class="sub" style="margin-top:6px">Pastikan Netlify Function terhubung ke Apps Script melalui APPS_SCRIPT_URL.</div></div></div>`}
+}
+init();
+</script>
+</body>
+</html>
